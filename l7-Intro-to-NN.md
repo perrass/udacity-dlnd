@@ -58,3 +58,17 @@ $$ \theta = \theta - \eta * \nabla_{\theta} J(\theta;x^{i:i+n};y^{i:i+n})$$
 * Chossing a proper schedules for dynanmic learning rate
 * The same learning rate applies to all paramter updates. If our data is sparse and our features have very different frequencies, we might not want to update all of them to the same extent
 * Avoiding getting trapped in their **numerous suboptimal local minima**, when minimizing highly non-convex error functions common for neural networks.
+
+### Backpropagation
+
+The backpropagation algorithm uses the **chain rule** to **find the error** with the respect to the weights connecting the input layer to the hidden layer (for a two layer network)
+
+The error is going forward, and the output is known, so we can using the **final output errors and the weights** to obtain the error of each neurons from former layers. This process is going backward. Hence, there exists the problem of **vanishing gradient**
+
+[Yes, you should understand backprop](https://medium.com/@karpathy/yes-you-should-understand-backprop-e2f06eab496b#.6xszsfjee)
+
+Except for **vanishing gradient**, the sigmoid is that its local gradient (z(1-z)) achieves a maximum at 0.25, when z = 0.5. That means that **every time the gradient signal flows through a sigmoid gate, its magnitude always diminishes by one quarter (or more)**. If you're using basic SGD, this would make the lower layers of a network train much slower than the higher ones.
+
+**If you're using sigmoids or tanh non-linearities in network and you understand backpropagation you should always be nervous about making sure that the initialization doesn't cause them to be fully saturated**
+
+[如何理解back propgation - 知乎](https://www.zhihu.com/question/27239198)

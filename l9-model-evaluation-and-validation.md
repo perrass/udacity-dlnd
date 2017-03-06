@@ -2,6 +2,8 @@
 
 ### Confusion Matrix
 
+#### Example
+
 |             | Diagnosed Sick | Diagnosed Healty |
 | :---------: | :------------: | :--------------: |
 |  **SICK**   | True Positive  |  False Negative  |
@@ -12,7 +14,7 @@
 * False Negative means the prediction is Healthy but the fact is Sick
 * False Positive means the prediction is Sick but the fact is Healthy
 
----
+#### Matrix
 
 |          | Guessed Positive | Guessed Negative |
 | -------- | ---------------- | ---------------- |
@@ -23,8 +25,6 @@
 * Recall = TP / (TP + FN)
 * Precision = TP / (TP + FP)
 
----
-
 ### Regression Metrics
 
 * Mean Absolute Error (MAE) -- **Not differentiable**
@@ -33,8 +33,6 @@
   * 0 -> Bad model
   * 1 -> Good model, due to MSE of the model being much smaller than that of benchmark model
 
----
-
 ### Types of Errors
 
 
@@ -42,6 +40,4 @@
 * Under-fitting means the training set is not fitted well, and the **error due to bias**
 * Over-fitting means the model is overcomplicated to memory the train set, and the **error due to variance**
 * K-Fold Cross Validation
-
----
 

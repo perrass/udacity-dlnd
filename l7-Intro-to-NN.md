@@ -1,5 +1,4 @@
-l7-Intro to Neural Networks
-===
+## Introduction to Neural Networks
 
 ### Perceptron
 

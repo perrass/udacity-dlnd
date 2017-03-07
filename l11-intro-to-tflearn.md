@@ -18,6 +18,18 @@ This is more suitable for multi-classification, and mathematically, it is
 
 ​								$$\sigma(\mathbf z)_j \ = \ {{e^{z_j}}\over{\sum^K_{k=1}\ e^{z_k}}}\qquad for j = 1,...,K$$
 
+### Tanh
+
+The function of tanh is 
+
+​										$$tanh(x) = {{e^{2x}-1} \over {e^{2x} +1}}$$
+
+The range is [-1, 1] and usually used in RNN and LSTM
+
+[Why use tanh for activation function of MLP?](http://stackoverflow.com/questions/24282121/why-use-tanh-for-activation-function-of-mlp) in stackflow
+
+[tanh activation](https://www.quora.com/search?q=tanh+activation) in quora
+
 ### Cross entropy
 
 The error between prediction vector and real value is **proportional to how far apart these vectors are**. Cross entropy is used to calculate this distance. Then, the goal of training network is to minimize cross entropy. $$D(\hat y, y) = -\sum_j y_j ln{\hat y_j}$$

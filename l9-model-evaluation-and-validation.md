@@ -35,8 +35,6 @@
 
 ### Types of Errors
 
-
-
 * Under-fitting means the training set is not fitted well, and the **error due to bias**
 * Over-fitting means the model is overcomplicated to memory the train set, and the **error due to variance**
 * K-Fold Cross Validation

@@ -26,7 +26,7 @@ Word2vec is a neural network model that trains on text to create embeddings. And
 
 ### RNN
 
-[Anyone Can Learn To Code an LSTM-RNN in Python (Part 1: RNN)](http://iamtrask.github.io/2015/11/15/anyone-can-code-lstm/)
+**[Anyone Can Learn To Code an LSTM-RNN in Python (Part 1: RNN)](http://iamtrask.github.io/2015/11/15/anyone-can-code-lstm/)**
 
 ```Python
 import copy, numpy as np
@@ -129,9 +129,9 @@ for j in range(100000):
         # Copies the layer_1 value into an array so that at the next time step we can apply the hidden layer at the current one
         layer_1_values.append(copy.deepcopy(layer_1))
 
-    future_layer_1_delta = np.zeros(hidden_dim)
-    
     ### BACK PROPAGATION
+        
+    future_layer_1_delta = np.zeros(hidden_dim)
 
     for position in range(binary_dim):
 		
@@ -154,7 +154,8 @@ for j in range(100000):
             layer_2_delta.dot(synapse_1.T)) * \
             sigmoid_output_to_derivative(layer_1)
 
-        # We don't actually update our weight matrices until after we've fully backpropagetd everything
+        # We don't actually update our weight matrices 
+        # until after we've fully backpropagetd everything
         synapse_1_update += np.atleast_2d(layer_1).T.dot(layer_2_delta)
         synapse_h_update += np.atleast_2d(prev_layer_1).T.dot(layer_1_delta)
         synapse_0_update += X.T.dot(layer_1_delta)
@@ -180,17 +181,27 @@ for j in range(100000):
             out += x * pow(2, index)
         print (str(a_int) + " + " + str(b_int) + " = " + str(out))
         print ("-------------")
-
 ```
 
 **Note1: How the the size of hidden layer affects the speed of convergence.**
 
 * Do larger hidden dimensions make things train faster or slower?
+
+  * Slower
+  * The dimensions of synapse 0, 1 and h is 2 * d, d * 1, and d * d. If d is increased, the dimensions of weights are also increased.
+
 * More iterations or fewer?
+
+  * If the number of hidden nodes is insufficient or too sufficient, it requires more iterations
+  * For insufficient hidden nodes, the hidden layer cannot catch enough information
+  * For too much hidden nodes, the error for each nodes would be less (due to the less layer2error and more nodes), so there requires more iterations
+
+  ![](/home/perra/Github/udacity-dlnd/error.png)
 
 **Note2: numpy notes**
 
-* `np.zeros` and `np.zeros_like`
+* `np.zeros_like` return an array of zeros with the same shape and types as a given array
+* `np.atleast_2d` view inputs as arrays with at least two dimensions (e.g. one dim -> two dims)
 
 **Note3: How to combine the information from the previous hidden layer and the  input?**
 
@@ -198,11 +209,41 @@ After each has been propagated through its various matrices (**interpretations**
 
 **Note4: What is delta?**
 
+* Forward: one weight update can be calculated as: $$\Delta w_i = \eta \delta x_i$$, with the error term $\delta$ is: $$\delta = (y - \hat y)f'(\sum w_ix_i)$$			
+* Backward: $\delta^h_j = \sum_k W_{jk} \delta^o_k f'(h_j)$, with $k$ is one output unit,  $j$ is one hidden unit
+
 **Note5: What is the distinction between a common neural network and a RNN?**
+
+* Forward 
+  * The hidden layer weights should be stored
+  * The current hidden layer weights are propagated from both the input to the hidden layer and the previous hidden layer to the current hidden layer
+  * The delta of output layer for each iteration should be stored
+* Backward
+  * The delta at the hidden layer from future should be stored (**Not a list**)
+  * The delta at the hidden layer: $\delta^h_j = \sum_k W_{jk} \delta^o_k f'(h_j)$ $\delta^h_j = (\sum_k W_{jk} \delta^o_k +\sum_mW_{jm}\delta^h_m) f'(h_j)$, with $m$ is one future hidden layer
+  * The updated weights between cur hidden layer and prev hidden layer is $\Delta w_{jp} = \eta \delta_{j} x_p$
 
 **Note6: Why don't we actually update our weight matrices until after we've fully back-propagated everything?**
 
-[The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)
+**[The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)**
+
+Sequences in the input and the output
+
+* From fixed-size input to fixed-size output (image classification, without RNN)
+* From fixed-size input to sequence output (image captioning takes an image and outputs a sentence of words)
+* From sequence input to fixed-size output (sentiment analysis)
+* From sequence input to sequence output (machine translation)
+* Synced input and output (video classification)
+
+```python
+class RNN:
+    # ...
+    self.h = np.tanh(np.dot(self.W_hh, self.h) + np.dot(self.W_xh, x))
+    y = np.dot(self.W_hy, self.h)
+    return y
+```
+
+The code is similar as the former one, only the activation function is changed to **tanh**, which the range is [-1, 1]
 
 ### LSTM
 

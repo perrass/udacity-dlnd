@@ -1,5 +1,9 @@
 # Word2Vec
 
+**Word embedding**
+
+Word embedding is the collective name for a set of language modeling and feature learning techniques in natural language processing where words or phrases from the vocabulary are mapped to vectors of real numbers.
+
 The goal is actually just to learn the **weights of the hidden layer** we'll see that these weights are actually the "word vectors" that we're trying to learn
 
 Given a specific word in the middle of a sentence, look at the words nearby and pick one at random. The network is going to tell us the **probability for every word in our vocabulary of being the "nearby word" that we chose**. "Nearby" is a "window size" parameter to the algorithms

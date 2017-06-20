@@ -128,3 +128,61 @@ In addition to normal FIFO queues, we have also implemented a **shuffling queue*
 
 A **container** is the mechanism within TensorFlow for managing longer-lived mutable state. The bakcing store for a Variable lives in a container. Using containers, it is possible to share state even across completely disjoint computation graphs associated wtih different Sessions.
 
+## Optimizations
+
+### Common Subexpression Elimination
+
+Since the construction of computation graphs is often done by many different layers of abstractions in the client code, computation graphs can easily end up with redundant copies of the same computation. To handle this, we have implemented a common subexpression pass similar to the algorithm described by **Click** that runs over the computation graph and canonicalizes multiple copies of operations with identical inputs and operation types to just a single one of these nodes, and redirects graph edges appropriately to reflect the canonicalization.
+
+PS: 自己的理解是，不重新搭建图，而是用一个图的output的Node，做为新图的input的Node
+
+### Controlling Data Communication and Memory Usage
+
+TensorFlow's optimization of scheduling focuses on data transfers and memory usages. Specifically, scheduling can **reduce the time window during which intermiediate results need to be kept in memory in between operations** and hence (reduce) the peak memory consumption. Furthermore, orchestrating the communication of data across devices can **reduce contention for network resources**.
+
+The particularly necessary and effective optimization is the **scheduling of Receive nodes for reading remote values**. If no precautions (预防) are taken, these nodes may start much earlier than necessary, possibly all at once when execution starts. By performing an as-soon-as-possible/as-late-as-possible calculation, we analyze the critical paths of graphs, in order to estimate when to start the Receive nodes. We then **insert control edges with the aim of delaying the start of these nodes until just before their results are needed**
+
+### Asynchronous Kernels
+
+In addition to normal synchronous kernels that complete their execution at the end the Compute method, our framework also supports **non-blocking kernels**. Such non-blocking kernels use a slightly different interface whereby the Compute method is passed a continuation that should be invoked when the kernel's execution is complete. This is an optimization for environments where **having many active threads is relatively expensive in terms of memory usage or other resources, and allows us to avoid tying up an execution thread for unbounded periods of time while waiting for I/O or other events to occur**. Examples of asynchronous kernels include the **Receive** kernel, and the **Enqueue** and **Dequeue** kernels (which might need to block if queue space is not available or if no data is available to be read, respectively)
+
+### Optimized Libraries for Kernel Implementations
+
+We often make use of pre-existing highly-optimized numerical libraries to implement kernels for some operations (e.g. GPU libraries for convolutional kernels for deep neural nets such as cuda-convnet and cuDNN)
+
+### Lossy Compression
+
+**Some machine learning algorithms, including those typically used for training neural networks, are torelant of noise and reduced precision arithmetic.** We often **use lossy compression of higher precision internal representations when sending data between devices**. For example, we often **insert special conversion nodes that convert 32-bit floating point representations into a 16-bit floating point representation, and then convert back to a 32-bit representation on the other side of the communication channel (filling in zeros)**
+
+## Status and Experience
+
+Critical strategies for porting the Inception model to Tensorflow:
+
+1. Build tools to gain insight into the exact number of parameters in a given model
+2. Start small and scale up
+3. Always ensure that the objective (loss function) matches between machine learning systems when learning is turned off. Setting the learning rate to be zero helped us identify unexpected behavior in how we had randomly initialized variables in a model. Such an error would have been difficult to identify in a dynamic, training network
+4. Make a single machine implementation match before debugging a distributed implementation
+5. Guard against numerical errors. Numerical libraries are inconsistent in how they handle non-finite floating point values. Convolutional neural networks are particularly susceptible to numerical instability and will tend to diverge quite regularly during experimentation and debugging phases. Guarding against this behavior by checking for non-finite floating point values allows one to detect errors in real time as opposed to identifying divergent behavior post-hoc
+6. Analyze pieces of a network and understand the magnitude of numercial error
+
+## Common Programming Idioms
+
+### Data Parallel Training
+
+One simple technique for speeding up SGD is to parallelize the computation of the gradient for a mini-batch across mini-batch elements. For example, if we are using a mini-batch size of 1000 elements, we can use 10 replicas of the model to each compute the gradient for 100 elements, and then combine the gradients and apply updates to the parameters synchronously. In this case, the TensorFlow graph simply has many replicas of the portion of the graph that does the bulk f the model computation, and **a single client thread drives the entire training loop for a large graph**
+
+![](/assets/data_parallelism.png)
+
+This approach can also be made asynchronous. In this configuration, there is **one client thread for each of the graph replicas**
+
+### Model Parallel Training
+
+Model Parallel Training, where different portions of 	the model computation are done on different computational devices simultaneously for the same batch of examples, is also easy to express in TensorFlow. E.g., LSTM model used for sequence to sequence learning
+
+![](/assets/model_parallelism.png)
+
+### Concurrent Steps for Model Computation Pipelining
+
+Another common way to get better utilization for training deep neural networks is to pipeline the computation of the model within the same devices, by running  a small number of concurent steps within the same set of devices
+
+![](/assets/concurrent_parallelism.png)

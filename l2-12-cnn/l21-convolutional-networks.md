@@ -2,7 +2,7 @@
 
 ### Concepts
 
-* Statistical Invariance, if the two imputs contain the same kind of information, we can set the same weights and train the weights jointly for those input. This is weight sharing. **E.g: ** The location of a same word in a document, or the color of a same image.
+* **Statistical Invariance**, if the two imputs contain the same kind of information, we can set the same weights and train the weights jointly for those input. This is **weight sharing**. E.g., the location of a same word in a document, or the color of a same image.
 * Patch (Kernel), the window
 * Depth, the number of feature map, or filter depth, the amount of filters in a convolutional layer. If we have a depth of k, we connect each patch of pixels to k neurons in the next layer, also a hyper-parameter
 * Feature Map, one stack in depth, a map in one layer to capture one feature. E.g. if one patch might include some white teeth, some blonde whiskers, and a part of a red tongue. The layer at least should have three feature maps for teeth, whisker and tongue, and the filter depth is 3.
@@ -65,6 +65,18 @@ E.g:
 * A stride of 2 for both width and height
 * Padding of size 1
 * Output size is $14 \times 14 \times 20$
+
+---
+
+$\color{red}{具体的计算过程!!!}$
+
+假设$12\times12$的图片，用$3\times3$的核，步长是1，补全的0，卷积的基本方法是求和并没有激活函数。通过卷积层后，会变成$10\times10$的隐藏层，隐藏层的深度是卷积核的深度
+
+![](/assets/conv_3_3_1_0.png)
+
+用$3\times3$的核，步长是2，补全的0，会变成$5\times5$的隐藏层
+
+---
 
 In Tensorflow,
 

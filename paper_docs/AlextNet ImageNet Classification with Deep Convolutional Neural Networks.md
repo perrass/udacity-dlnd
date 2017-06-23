@@ -32,6 +32,19 @@ We generally observe during training that **models with overlapping pooling find
 
 ### Overall Architecture
 
+![](/assets/AlexNet.png)
+
+1. 96 kernels with size $11\times 11\times 3$  -> $(11\times11\times3+1)\times96 = 34966$
+2. 256 kernels with size $5\times5\times48$ -> $(5\times5\times48+1)\times256 = 307456$
+3. 384 kernels with size $3\times3\times256$ -> $(3 \times 3\times256+1) \times 384 = 885120$
+4. 384 kernels with size $3\times3\times192$ -> $(3\times3\times192+1)\times384=663936$
+5. 256 kernels with size $3\times3\times192$ -> $(3\times3\times192+1)\times256 = 442624$
+6. cnn to fully connected layers with 4096 neurons -> $13\times13\times128\times4096 = 88604672$
+7. fully connected -> $4096 \times 4096 = 16777216$
+8. fully connected to softmax -> $4096 \times 1000 = 4096000$
+
+**The ratio of the weigths of CNN is $2334102/111811990 \approx 2.09\% $
+
 All architecture would be discussed in one blog
 
 ## Reducing Overfitting

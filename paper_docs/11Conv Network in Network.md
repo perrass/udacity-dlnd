@@ -35,8 +35,6 @@ The answer of the second question is ReLU before, because **bn** can introduce n
 
 ---
 
-![](/assets/1_1_conv_3.png)
-
 ## Global Average Pooling
 
 **Global average pooling is a layer to replace the trainditional fully connected layers in CNN**. The idea is to **generate one feature map for each corresponding category of the classification task** in the last mlpconv layer. **Instead of adding fully connected layers on top of the feature maps, we take the average of each feature map, and the resulting vector is fed directly into the softmax layer**
@@ -50,3 +48,9 @@ Benifits
 ![](/assets/1_1_conv_2.png)
 
 **PS: Why 1_1 conv is a regularizer?**
+
+## Network In Network Structure
+
+![](/assets/1_1_conv_3.png)
+
+**The overall structure of NIN is a stack of mlpconv layers, on top of which lie the global average pooling and the objective cost layer.** Sub-sampling layers can be added in between the mlpconv layers as in CNNand maxout networks. The figure is an example.

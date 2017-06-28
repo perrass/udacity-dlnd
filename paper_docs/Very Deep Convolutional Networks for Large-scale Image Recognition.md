@@ -19,7 +19,7 @@ The activation function is ReLU and the that in the last layer is soft-max.
 The stacks of two $3\times3$ layers has an effective receptive field of $5\times5$, and the stacks of three has an effective receptive field of $7\times7$. Hence, **which is better?**
 
 1. We incorporate three non-linear rectification layers instead of a single one, which **makes the decision function more discriminative**
-2. The amount of parameters of $7\times7$ conv is $7^2C^2 = 49C^2$, where C is the number of channels, whereas that of the $3\times3$ is $3(3^2C^2) = 27C^2$. **This can be seen as imposing a *regularisation* on the $7\times7$ conv filters**, forcing them to have a decomposition through the $3\times3$ filters with non-linearity injected in between.
+2. The amount of parameters of $7\times7$ conv is $7^2C^2 = 49C^2$, where C is the number of channels, whereas that of the $3\times3$ is $3(3^2C^2) = 27C^2$. **This can be seen as imposing a *regularisation* on the $7\times7$ conv filters**, forcing them to have a decomposition through the $3\times3$ filters with non-linearity injected in between. (**PS: channels是指深度，比如RGB有3个channels，但这样计算不好的地方在于，当我们使用$3\times3$时，会有更多的卷积核，所以总体参数是变多的。这里的正则可能是指，单一卷积核的参数数量是降低的**)
 
 ## Training
 
